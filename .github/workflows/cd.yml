@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Pull Docker image
-        run: sudo docker pull anarbekulym/cicd_pipeline:latest
+        run: sudo docker pull anarbekulym/cicd_pipeline
       - name: Delete Old docker container
         run: sudo docker rm -f cicd_pipeline-container || true
       - name: Run Docker Container
