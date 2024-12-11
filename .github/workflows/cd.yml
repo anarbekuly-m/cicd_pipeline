@@ -1,24 +1,21 @@
-name: CI Pipeline
+name: CD Pipeline
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
 
 jobs:
 
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Login Dockerhub
-        env:
-          DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
-          DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-        run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-
-      - name: Build the Docker image
-        run: docker build -t anarbekulym/cicd_pipeline .
-      - name: Push to Dockerhub
-        run: docker push anarbekulym/cicd_pipeline:latest
+      - name: Pull Docker image
+        run: sudo docker pull anarbekulym/cicd_pipeline:latest
+      - name: Delete Old docker container
+        run: sudo docker rm -f cicd_pipeline-container || true
+      - name: Run Docker Container
+        run: sudo docker run -d -p 8080:8080 --name cicd_pipeline-container anarbekulym/cicd_pipeline
